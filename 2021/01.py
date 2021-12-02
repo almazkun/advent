@@ -4,7 +4,7 @@ from _solution import Solution
 class _01_Solution(Solution):
     @property
     def cleaned(self):
-        return [int(x) for x in self.input.split('\n') if x]
+        return [int(x) for x in self.input.split("\n") if x]
 
     @property
     def solution(self):
@@ -20,7 +20,7 @@ class _01_Solution(Solution):
                 if delta > 0:
                     ans.append(delta)
         return len(ans)
-    
+
     def p2(self):
         win = []
         for k, _ in enumerate(self.cleaned):
@@ -32,9 +32,7 @@ class _01_Solution(Solution):
     def get_next_3_sum(self, index):
         try:
             return sum(
-                [self.cleaned[index],
-                self.cleaned[index + 1],
-                self.cleaned[index + 2]]
+                [self.cleaned[index], self.cleaned[index + 1], self.cleaned[index + 2]]
             )
         except IndexError:
             return None

@@ -10,7 +10,7 @@ class _02_Solution(Solution):
 
     @property
     def cleaned(self):
-        return [x for x in self.input.split('\n') if x]
+        return [x for x in self.input.split("\n") if x]
 
     @property
     def commands(self):
@@ -33,7 +33,6 @@ class _02_Solution(Solution):
         for command, direction in self.commands:
             self.apply_command(command, direction)
         return self.horizontal_position * self.depth
-
 
 
 input_ = """
