@@ -1,7 +1,7 @@
-from _solution import Solution
+from solution import Solution
 
 
-class _01_Solution(Solution):
+class Sol(Solution):
     @property
     def cleaned(self):
         return [int(x) for x in self.input.split("\n") if x]
@@ -2042,4 +2042,4 @@ input_ = """
 """
 
 if __name__ == "__main__":
-    _01_Solution(input_).solve()
+    Sol(input_).solve()

@@ -1,7 +1,7 @@
-from _solution import Solution
+from solution import Solution
 
 
-class _02_Solution(Solution):
+class Sol(Solution):
     def __init__(self, *args, **kwargs):
         self.horizontal_position = 0
         self.depth = 0
@@ -1038,4 +1038,4 @@ up 5
 forward 4
 """
 if __name__ == "__main__":
-    _02_Solution(input_).solve()
+    Sol(input_).solve()
