@@ -1,6 +1,106 @@
 from solution import Solution
 
 
+class Line:
+    def __init__(self, x1, y1, x2, y2):
+        self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
+
+    def __repr__(self):
+        return self.points
+
+    def __eq__(self, other):
+        return (
+            self.x1 == other.x1
+            and self.y1 == other.y1
+            and self.x2 == other.x2
+            and self.y2 == other.y2
+        )
+
+    def __hash__(self):
+        return hash((self.x1, self.y1, self.x2, self.y2))
+
+    def __contains__(self, point):
+        return self.x1 <= point[0] <= self.x2 and self.y1 <= point[1] <= self.y2
+
+    def __len__(self):
+        return abs(self.x2 - self.x1) + abs(self.y2 - self.y1)
+
+    def __getitem__(self, index):
+        if index == 0:
+            return self.x1, self.y1
+        elif index == 1:
+            return self.x2, self.y2
+        else:
+            raise IndexError(f"Line index {index} out of range")
+
+    def __setitem__(self, index, value):
+        if index == 0:
+            self.x1 = value[0]
+            self.y1 = value[1]
+        elif index == 1:
+            self.x2 = value[0]
+            self.y2 = value[1]
+        else:
+            raise IndexError(f"Line index {index} out of range")
+
+    @property
+    def points(self):
+        if self.x1 == self.x2:
+            start = min(self.y1, self.y2)
+            end = max(self.y1, self.y2)
+            for y in range(start, end + 1):
+                yield Point(self.x1, y)
+        elif self.y1 == self.y2:
+            start = min(self.x1, self.x2)
+            end = max(self.x1, self.x2)
+            for x in range(start, end + 1):
+                yield Point(x, self.y1)
+
+
+class Point:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+
+    def __repr__(self):
+        return f"({self.x},{self.y})"
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __contains__(self, point):
+        return self.x <= point[0] <= self.x and self.y <= point[1] <= self.y
+
+    def __getitem__(self, index):
+        if index == 0:
+            return self.x
+        elif index == 1:
+            return self.y
+        else:
+            raise IndexError(f"Point index {index} out of range")
+
+    def __setitem__(self, index, value):
+        if index == 0:
+            self.x = value
+        elif index == 1:
+            self.y = value
+        else:
+            raise IndexError(f"Point index {index} out of range")
+
+
+class Board:
+    def __init__(self, lines):
+        self.lines = lines
+        self.points = []
+        for line in lines:
+            self.points.append(line.points)
+
+    def __repr__(self):
+        return self.lines
+
+
 class Sol(Solution):
     """--- Day 5: Hydrothermal Venture ---
 
@@ -63,6 +163,7 @@ class Sol(Solution):
     """
 
     def __init__(self, *args, **kwargs):
+        self.board = None
         super().__init__(*args, **kwargs)
 
     @property
@@ -70,18 +171,38 @@ class Sol(Solution):
         return [x for x in self.input.split("\n") if x]
 
     def p1(self):
-        return self.cleaned
+        self.board = self.build_board()
+        return self.board
 
     def p2(self):
         pass
+
+    def build_board(self):
+        lines = []
+        for line in self.cleaned:
+            x1y1, x2y2 = line.split("->")
+            x1, y1 = x1y1.split(",")
+            x2, y2 = x2y2.split(",")
+            lines.append(Line(x1, y1, x2, y2))
+        return Board(lines)
 
     @property
     def solution(self):
         return f"p1: {self.p1()}\np2: {self.p2()}\n"
 
 
-input_ = """
-561,579 -> 965,175
+test_ = """0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2"""
+
+input_ = """561,579 -> 965,175
 735,73 -> 316,73
 981,566 -> 981,11
 631,588 -> 631,910
@@ -580,8 +701,7 @@ input_ = """
 970,916 -> 100,46
 672,152 -> 672,842
 468,825 -> 468,911
-673,731 -> 267,325
-"""
+673,731 -> 267,325"""
 
 
 if __name__ == "__main__":
