@@ -5,46 +5,10 @@ class Line:
     def __init__(self, x1, y1, x2, y2):
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
 
-    def __repr__(self):
-        return self.points
-
-    def __eq__(self, other):
-        return (
-            self.x1 == other.x1
-            and self.y1 == other.y1
-            and self.x2 == other.x2
-            and self.y2 == other.y2
-        )
-
     def __hash__(self):
         return hash((self.x1, self.y1, self.x2, self.y2))
 
-    def __contains__(self, point):
-        return self.x1 <= point[0] <= self.x2 and self.y1 <= point[1] <= self.y2
-
-    def __len__(self):
-        return abs(self.x2 - self.x1) + abs(self.y2 - self.y1)
-
-    def __getitem__(self, index):
-        if index == 0:
-            return self.x1, self.y1
-        elif index == 1:
-            return self.x2, self.y2
-        else:
-            raise IndexError(f"Line index {index} out of range")
-
-    def __setitem__(self, index, value):
-        if index == 0:
-            self.x1 = value[0]
-            self.y1 = value[1]
-        elif index == 1:
-            self.x2 = value[0]
-            self.y2 = value[1]
-        else:
-            raise IndexError(f"Line index {index} out of range")
-
-    @property
-    def points(self):
+    def points(self, diagonal=False):
         if self.x1 == self.x2:
             start = min(self.y1, self.y2)
             end = max(self.y1, self.y2)
@@ -55,50 +19,56 @@ class Line:
             end = max(self.x1, self.x2)
             for x in range(start, end + 1):
                 yield Point(x, self.y1)
+        elif diagonal:
+            print(self, "diagonal")
+            if self.x1 - self.x2 == self.y1 - self.y2:
+                start = min(self.x1, self.x2)
+                end = max(self.x1, self.x2)
+                for x in range(start, end + 1):
+                    y = self.y1 + (x - self.x1) * (self.y2 - self.y1) // (self.x2 - self.x1)
+                    yield Point(x, y)
+        else:
+            print(self, "is not a line")
+
+    def __repr__(self):
+        return f"{self.x1}, {self.x2} -> {self.y1}, {self.y2}"
+    @property
+    def biggest_x(self):
+        return max(self.x1, self.x2)
+
+    @property
+    def biggest_y(self):
+        return max(self.y1, self.y2)
+
 
 
 class Point:
     def __init__(self, x, y):
         self.x, self.y = x, y
 
-    def __repr__(self):
-        return f"({self.x},{self.y})"
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-
-    def __contains__(self, point):
-        return self.x <= point[0] <= self.x and self.y <= point[1] <= self.y
-
-    def __getitem__(self, index):
-        if index == 0:
-            return self.x
-        elif index == 1:
-            return self.y
-        else:
-            raise IndexError(f"Point index {index} out of range")
-
-    def __setitem__(self, index, value):
-        if index == 0:
-            self.x = value
-        elif index == 1:
-            self.y = value
-        else:
-            raise IndexError(f"Point index {index} out of range")
-
-
 class Board:
-    def __init__(self, lines):
-        self.lines = lines
-        self.points = []
-        for line in lines:
-            self.points.append(line.points)
+    def __init__(self, x_length, y_length):
+        self.x_length, self.y_length = x_length, y_length
+        self.plane = [[[] for _ in range(y_length)] for _ in range(x_length)]
 
     def __repr__(self):
-        return self.lines
+        if self.plane:
+            for line in self.plane:
+                for point in line:
+                    l = len(point)
+                    if l:
+                        print(l, end=" ")
+                    else:
+                        print(".", end=" ")
+
+    def add_point(self, point):
+        try:    
+            self.plane[point.x][point.y].append(point)
+        except IndexError:
+            print(point)
+            print(self.plane)
+            raise IndexError
+
 
 
 class Sol(Solution):
@@ -160,6 +130,34 @@ class Sol(Solution):
 
     Consider only horizontal and vertical lines.
     At how many points do at least two lines overlap?
+    --- Part Two ---
+
+    Unfortunately, considering only horizontal and vertical 
+    lines doesn't give you the full picture; you need to also 
+    consider diagonal lines.
+
+    Because of the limits of the hydrothermal vent mapping 
+    system, the lines in your list will only ever be horizontal, 
+    vertical, or a diagonal line at exactly 45 degrees. In other words:
+
+    An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
+    An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
+    Considering all lines from the above example would now 
+    produce the following diagram:
+
+    1.1....11.
+    .111...2..
+    ..2.1.111.
+    ...1.2.2..
+    .112313211
+    ...1.2....
+    ..1...1...
+    .1.....1..
+    1.......1.
+    222111....
+    You still need to determine the number of points where at least two lines overlap. In the above example, this is still anywhere in the diagram with a 2 or larger - now a total of 12 points.
+
+    Consider all of the lines. At how many points do at least two lines overlap?
     """
 
     def __init__(self, *args, **kwargs):
@@ -172,19 +170,65 @@ class Sol(Solution):
 
     def p1(self):
         self.board = self.build_board()
+        print(self.board)
         return self.board
 
     def p2(self):
-        pass
+        self.board = self.build_board(diagonal=True)
+        return self.board
 
-    def build_board(self):
+
+    def build_board(self, diagonal=False):
+        """[summary]
+
+        return Board(lines)
+
+        Returns:
+            [type]: [description]
+        """
         lines = []
         for line in self.cleaned:
             x1y1, x2y2 = line.split("->")
             x1, y1 = x1y1.split(",")
             x2, y2 = x2y2.split(",")
+
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+
             lines.append(Line(x1, y1, x2, y2))
-        return Board(lines)
+
+        bigest_x = 1
+        bigest_y = 1
+        
+        for line in lines: 
+            if line.biggest_x > bigest_x:
+                bigest_x = line.biggest_x
+            if line.biggest_y > bigest_y:
+                bigest_y = line.biggest_y
+    
+        board = Board(bigest_x + 1, bigest_y + 1)
+
+        for line in lines:
+            for point in line.points(diagonal=diagonal):
+                board.add_point(point)
+
+        two_and_more = 0
+
+        for line in board.plane:
+            for point in line:
+                if len(point) >= 2:
+                    two_and_more += 1
+
+        for line in board.plane:
+            for point in line:
+                l = len(point)
+                if l:
+                    print(l, end=" ")
+                else:
+                    print(".", end=" ")
+            print()
+        
+        return two_and_more
+
 
     @property
     def solution(self):
@@ -709,4 +753,4 @@ if __name__ == "__main__":
         Sol(test_).solve()
     except:
         pass
-    Sol(input_).solve()
+#    Sol(input_).solve()
