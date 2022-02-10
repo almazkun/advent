@@ -9,29 +9,42 @@ class Line:
         return hash((self.x1, self.y1, self.x2, self.y2))
 
     def points(self, diagonal=False):
-        if self.x1 == self.x2:
-            start = min(self.y1, self.y2)
-            end = max(self.y1, self.y2)
-            for y in range(start, end + 1):
-                yield Point(self.x1, y)
-        elif self.y1 == self.y2:
-            start = min(self.x1, self.x2)
-            end = max(self.x1, self.x2)
-            for x in range(start, end + 1):
-                yield Point(x, self.y1)
-        elif diagonal:
-            print(self, "diagonal")
-            if self.x1 - self.x2 == self.y1 - self.y2:
+        if diagonal:
+            delta_x = abs(self.x2 - self.x1)
+            delta_y = abs(self.y2 - self.y1)
+            if delta_x == delta_y:
                 start = min(self.x1, self.x2)
                 end = max(self.x1, self.x2)
                 for x in range(start, end + 1):
-                    y = self.y1 + (x - self.x1) * (self.y2 - self.y1) // (self.x2 - self.x1)
+                    y = self.y1 + (x - self.x1) * (self.y2 - self.y1) // (
+                        self.x2 - self.x1
+                    )
                     yield Point(x, y)
+            elif self.x1 == self.x2:
+                start = min(self.y1, self.y2)
+                end = max(self.y1, self.y2)
+                for y in range(start, end + 1):
+                    yield Point(self.x1, y)
+            elif self.y1 == self.y2:
+                start = min(self.x1, self.x2)
+                end = max(self.x1, self.x2)
+                for x in range(start, end + 1):
+                    yield Point(x, self.y1)
         else:
-            print(self, "is not a line")
+            if self.x1 == self.x2:
+                start = min(self.y1, self.y2)
+                end = max(self.y1, self.y2)
+                for y in range(start, end + 1):
+                    yield Point(self.x1, y)
+            elif self.y1 == self.y2:
+                start = min(self.x1, self.x2)
+                end = max(self.x1, self.x2)
+                for x in range(start, end + 1):
+                    yield Point(x, self.y1)
 
     def __repr__(self):
         return f"{self.x1}, {self.x2} -> {self.y1}, {self.y2}"
+
     @property
     def biggest_x(self):
         return max(self.x1, self.x2)
@@ -41,10 +54,10 @@ class Line:
         return max(self.y1, self.y2)
 
 
-
 class Point:
     def __init__(self, x, y):
         self.x, self.y = x, y
+
 
 class Board:
     def __init__(self, x_length, y_length):
@@ -62,13 +75,12 @@ class Board:
                         print(".", end=" ")
 
     def add_point(self, point):
-        try:    
-            self.plane[point.x][point.y].append(point)
+        try:
+            self.plane[point.y][point.x].append(point)
         except IndexError:
             print(point)
             print(self.plane)
             raise IndexError
-
 
 
 class Sol(Solution):
@@ -132,17 +144,17 @@ class Sol(Solution):
     At how many points do at least two lines overlap?
     --- Part Two ---
 
-    Unfortunately, considering only horizontal and vertical 
-    lines doesn't give you the full picture; you need to also 
+    Unfortunately, considering only horizontal and vertical
+    lines doesn't give you the full picture; you need to also
     consider diagonal lines.
 
-    Because of the limits of the hydrothermal vent mapping 
-    system, the lines in your list will only ever be horizontal, 
+    Because of the limits of the hydrothermal vent mapping
+    system, the lines in your list will only ever be horizontal,
     vertical, or a diagonal line at exactly 45 degrees. In other words:
 
     An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
     An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
-    Considering all lines from the above example would now 
+    Considering all lines from the above example would now
     produce the following diagram:
 
     1.1....11.
@@ -177,7 +189,6 @@ class Sol(Solution):
         self.board = self.build_board(diagonal=True)
         return self.board
 
-
     def build_board(self, diagonal=False):
         """[summary]
 
@@ -198,13 +209,13 @@ class Sol(Solution):
 
         bigest_x = 1
         bigest_y = 1
-        
-        for line in lines: 
+
+        for line in lines:
             if line.biggest_x > bigest_x:
                 bigest_x = line.biggest_x
             if line.biggest_y > bigest_y:
                 bigest_y = line.biggest_y
-    
+
         board = Board(bigest_x + 1, bigest_y + 1)
 
         for line in lines:
@@ -226,9 +237,8 @@ class Sol(Solution):
                 else:
                     print(".", end=" ")
             print()
-        
-        return two_and_more
 
+        return two_and_more
 
     @property
     def solution(self):
@@ -753,4 +763,4 @@ if __name__ == "__main__":
         Sol(test_).solve()
     except:
         pass
-#    Sol(input_).solve()
+    Sol(input_).solve()
