@@ -1,34 +1,33 @@
 from solution import Solution
 
+
 class Fish:
     def __init__(self, internal_timer: int = 8):
         self.internal_timer = internal_timer
-    
+
     def __repr__(self):
-        return f'{self.internal_timer}'
-    
+        return f"{self.internal_timer}"
+
     def day_passed(self):
         self.internal_timer -= 1
         if self.internal_timer < 0:
             self.internal_timer = 6
             return Fish()
-    
+
+
 class Population:
     def __init__(self, fish_list: list):
         self.fish_list = fish_list
 
     def __repr__(self):
-        return f'{self.fish_list}'
-    
+        return f"{len(self.fish_list)}"
+
     def day_passed(self):
-        i = 0  
         original_len = len(self.fish_list)
-        for fish in self.fish_list:
-            new_born = fish.day_passed()
+        for i in range(original_len):
+            new_born = self.fish_list[i].day_passed()
             if new_born is not None:
                 self.fish_list.append(new_born)
-            i += 1
-        return self.fish_list
 
 
 class Sol(Solution):
@@ -107,10 +106,10 @@ class Sol(Solution):
     would there be after 80 days?
     --- Part Two ---
 
-    Suppose the lanternfish live forever and have unlimited 
+    Suppose the lanternfish live forever and have unlimited
     food and space. Would they take over the entire ocean?
 
-    After 256 days in the example above, there would be a 
+    After 256 days in the example above, there would be a
     total of 26984457539 lanternfish!
 
     How many lanternfish would there be after 256 days?
@@ -124,24 +123,42 @@ class Sol(Solution):
         return [x for x in self.input.split(",") if x]
 
     def p1(self):
+        pass
         fish_list = [Fish(int(x)) for x in self.cleaned]
         population = Population(fish_list)
         for _ in range(80):
             population.day_passed()
-            print(population)
         return len(population.fish_list)
 
-
-    def p2(self):
+    def p2(self, p1):
         fish_list = [Fish(int(x)) for x in self.cleaned]
         population = Population(fish_list)
-        for _ in range(256):
-            population.day_passed()
-        return len(population.fish_list)
+        p0 = len(population.fish_list)
+        p80 = p1
+
+        def p(t, p0, k):
+            # P(t)=P​0ekt
+            from math import exp
+
+            return p0 * exp(k * t)
+
+        def growth_rate(p0, pT, t):
+            # k=log(P(T)/P(0))/t
+            from math import log
+
+            return log(pT / p0) / t
+
+        k80 = growth_rate(p0, p80, 80)
+
+        print(p(80, p0, k80))
+
+        return round(p(256, p0, k80))
 
     @property
     def solution(self):
-        return f"p1: {self.p1()}\np2: {self.p2()}\n"
+        p1 = self.p1()
+        p2 = self.p2(p1)
+        return f"p1: {p1}\np2: {p2}\n"
 
 
 test_ = """3,4,3,1,2"""
@@ -150,7 +167,8 @@ input_ = """1,3,3,4,5,1,1,1,1,1,1,2,1,4,1,1,1,5,2,2,4,3,1,1,2,5,4,2,2,3,1,2,3,2,
 
 if __name__ == "__main__":
     try:
+        pass
         Sol(test_).solve()
     except Exception as e:
         print(e)
-#    Sol(input_).solve()
+    Sol(input_).solve()
