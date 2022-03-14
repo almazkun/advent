@@ -123,41 +123,27 @@ class Sol(Solution):
         return [x for x in self.input.split(",") if x]
 
     def p1(self):
-        pass
         fish_list = [Fish(int(x)) for x in self.cleaned]
         population = Population(fish_list)
         for _ in range(80):
             population.day_passed()
         return len(population.fish_list)
 
-    def p2(self, p1):
-        fish_list = [Fish(int(x)) for x in self.cleaned]
-        population = Population(fish_list)
-        p0 = len(population.fish_list)
-        p80 = p1
+    def p2(self):
+        days = [0] * 9
+        for fish in [int(x) for x in self.cleaned]:
+            days[fish] += 1
 
-        def p(t, p0, k):
-            # P(t)=P​0ekt
-            from math import exp
+        for i in range(256):
+            today = i % len(days)
+            days[(today + 7) % len(days)] += days[today]
 
-            return p0 * exp(k * t)
-
-        def growth_rate(p0, pT, t):
-            # k=log(P(T)/P(0))/t
-            from math import log
-
-            return log(pT / p0) / t
-
-        k80 = growth_rate(p0, p80, 80)
-
-        print(p(80, p0, k80))
-
-        return round(p(256, p0, k80))
+        return sum(days)
 
     @property
     def solution(self):
         p1 = self.p1()
-        p2 = self.p2(p1)
+        p2 = self.p2()
         return f"p1: {p1}\np2: {p2}\n"
 
 
