@@ -1,6 +1,70 @@
 from solution import Solution
 
 
+sig = {
+    "abcef": 0,
+    "cf": 1,
+    "acdeg": 2,
+    "acdfg": 3,
+    "bcdf": 4,
+    "abdfg": 5,
+    "abdefg": 6,
+    "acf": 7,
+    "abcdefg": 8,
+    "abcdfg": 9,
+}
+
+
+class Key:
+    def __init__(self, keys):
+        self.keys = keys
+
+    @property
+    def map_(self):
+        map_ = {
+            "a": "a",
+            "b": "b",
+            "c": "c",
+            "d": "d",
+            "e": "e",
+            "f": "f",
+            "g": "g",
+        }
+        right_sig = "".join(map_.keys())
+
+        for key in self.keys:
+            if len(key) == 7:
+                for i, sym in enumerate(right_sig):
+                    map_[sym] = key[i]
+                return map_
+
+    def decode(self, sequence):
+        print(
+            sequence,
+            "->",
+            "".join(sorted(set("".join([self.map_[sym] for sym in sequence])))),
+        )
+        return "".join(sorted(set("".join([self.map_[sym] for sym in sequence]))))
+
+
+class Digit:
+    def __init__(self, sequence, map_: dict = None):
+        self.sequence = sequence
+        self.map_ = map_
+
+    def part_one(self):
+        lens = {
+            2: 1,
+            3: 7,
+            4: 4,
+            7: 8,
+        }
+        try:
+            return lens[len(self.sequence)]
+        except KeyError:
+            pass
+
+
 class Sol(Solution):
     """--- Day 8: Seven Segment Search ---
 
@@ -25,22 +89,23 @@ class Sol(Solution):
     of seven segments named a through g:
 
     0:      1:      2:      3:      4:
-    aaaa    ....    aaaa    aaaa    ....
+     aaaa    ....    aaaa    aaaa    ....
     b    c  .    c  .    c  .    c  b    c
     b    c  .    c  .    c  .    c  b    c
-    ....    ....    dddd    dddd    dddd
+     ....    ....    dddd    dddd    dddd
     e    f  .    f  e    .  .    f  .    f
     e    f  .    f  e    .  .    f  .    f
-    gggg    ....    gggg    gggg    ....
+     gggg    ....    gggg    gggg    ....
 
     5:      6:      7:      8:      9:
-    aaaa    aaaa    aaaa    aaaa    aaaa
+     aaaa    aaaa    aaaa    aaaa    aaaa
     b    .  b    .  .    c  b    c  b    c
     b    .  b    .  .    c  b    c  b    c
-    dddd    dddd    ....    dddd    dddd
+     dddd    dddd    ....    dddd    dddd
     .    f  e    f  .    f  e    f  .    f
     .    f  e    f  .    f  e    f  .    f
-    gggg    gggg    ....    gggg    gggg
+     gggg    gggg    ....    gggg    gggg
+
 
     So, to render a 1, only segments c and f
     would be turned on; the rest would be off.
@@ -140,6 +205,63 @@ class Sol(Solution):
     use a unique number of segments (highlighted above).
 
     In the output values, how many times do digits 1, 4, 7, or 8 appear?
+
+    --- Part Two ---
+
+    Through a little deduction, you should now be able to determine the remaining digits. Consider again the first example above:
+
+    acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab |
+    cdfeb fcadb cdfeb cdbaf
+
+    After some careful analysis, the mapping between signal wires and segments only make sense in the following configuration:
+
+         dddd
+        e    a
+        e    a
+         ffff
+        g    b
+        g    b
+         cccc
+
+    So, the unique signal patterns would correspond to the following digits:
+
+        acedgfb: 8
+        cdfbe: 5
+        gcdfa: 2
+        fbcad: 3
+        dab: 7
+        cefabd: 9
+        cdfgeb: 6
+        eafb: 4
+        cagedb: 0
+        ab: 1
+
+    Then, the four digits of the output value can be decoded:
+
+        cdfeb: 5
+        fcadb: 3
+        cdfeb: 5
+        cdbaf: 3
+
+    Therefore, the output value for this entry is 5353.
+
+    Following this same process for each entry in the second, larger example above, the output value of each entry can be determined:
+
+    fdgacbe cefdb cefbgd gcbe: 8394
+    fcgedb cgb dgebacf gc: 9781
+    cg cg fdcagb cbg: 1197
+    efabcd cedba gadfec cb: 9361
+    gecf egdcabf bgf bfgea: 4873
+    gebdcfa ecba ca fadegcb: 8418
+    cefg dcbef fcge gbcadfe: 4548
+    ed bcgafe cdgba cbgef: 1625
+    gbdfcae bgc cg cgb: 8717
+    fgae cfgab fg bagce: 4315
+
+    Adding all of the output values in this larger example produces 61229.
+
+    For each entry, determine all of the wire/segment connections and decode the four-digit output values. What do you get if you add up all of the output values?
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -150,10 +272,30 @@ class Sol(Solution):
         return [x for x in self.input.split("\n") if x]
 
     def p1(self):
-        return self.cleaned
+        found = []
+        for line in self.cleaned:
+            digits = [x for x in line.split("|")[1].split(" ") if x]
+            for digit in digits:
+                digit = "".join(sorted(set(digit)))
+                digit = Digit(digit)
+                digit = digit.part_one()
+                if digit is not None:
+                    found.append(digit)
+        return len(found)
 
     def p2(self):
-        pass
+        found = []
+        for line in self.cleaned:
+            print(line)
+            keys = [x for x in line.split("|")[0].split(" ") if x]
+            digits = [x for x in line.split("|")[1].split(" ") if x]
+
+            key = Key(keys)
+
+            for digit in digits:
+                print(sig[key.decode(digit)])
+
+        return found
 
     @property
     def solution(self):
@@ -161,9 +303,20 @@ class Sol(Solution):
 
 
 test_ = """
+be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 """
 
-input_ = """ecgabfd gfbe dgbeaf aeg gfbda eg bgdcaf efgdca abced eadgb | begf decgfa aeg eg
+input_ = """
+ecgabfd gfbe dgbeaf aeg gfbda eg bgdcaf efgdca abced eadgb | begf decgfa aeg eg
 ebfg bfgdea gaf gf baedgc dafec cfdabg ecfabgd fdgea dbaeg | gaedbc egbf dbgcea dagfebc
 cfadeg ca bacg dfabe dgcbf dbegafc dac afbdgc gcbedf bfcda | fbdac adbef bgcdfae dcagfe
 eag cdgfae cbdge ae fcgad eabdfg ecaf gefbadc dgafcb degca | dacbefg fcdage agdcf fedagb
@@ -362,7 +515,8 @@ abcef dbfaegc aefcg dcgbae fbcg efgacb cg cdabfe gec dfeag | dgfae gdefa agcbde 
 dgf fcbega afdbeg fgabe dg efadg bged adfbceg agbcfd fedca | aefgb begd fceda debg
 cdgaeb ba befgdca defbc gdecaf bae gabc afgdeb gedac decab | fbecd bae gdecfa edcba
 ebagfd dfg dcbaeg dgbceaf gf gacdf fcade gacbd gcfb fbagcd | adgfc acbgd edbagf degabc
-gba eagbcf gb gbacf dacgebf bceg gcafed acfeg acbfd adegfb | abfcdeg dbcfage faecg afebgc"""
+gba eagbcf gb gbacf dacgebf bceg gcafed acfeg acbfd adegfb | abfcdeg dbcfage faecg afebgc
+"""
 
 
 if __name__ == "__main__":
@@ -370,4 +524,4 @@ if __name__ == "__main__":
         Sol(test_).solve()
     except:
         pass
-    Sol(input_).solve()
+#    Sol(input_).solve()

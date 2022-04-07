@@ -115,7 +115,7 @@ class Sol(Solution):
 
         delta = get_delta(self.cleaned)
 
-        # return(sum_of_diffs(self.cleaned, delta))
+        return sum_of_diffs(self.cleaned, delta)
 
     def p2(self):
         def fuel_for_delta(delta):
