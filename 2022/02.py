@@ -2522,12 +2522,15 @@ class Sol:
         C - Z - Scissors:   3
         """
         score_map = {
-            "A": 1, "X": 1,
-            "B": 2, "Y": 2,
-            "C": 3, "Z": 3,
+            "A": 1,
+            "X": 1,
+            "B": 2,
+            "Y": 2,
+            "C": 3,
+            "Z": 3,
         }
         return score_map[a]
-    
+
     def get_winner(self, a, b):
         """
         A - X - Rock:       1
@@ -2542,23 +2545,23 @@ class Sol:
             return 3
         if a == "C" and b == "Z":
             return 3
-        
+
         if a == "A" and b == "Y":
             return 6
         if a == "B" and b == "Z":
             return 6
         if a == "C" and b == "X":
             return 6
-        
+
         if a == "A" and b == "B":
             return 6
         if a == "B" and b == "C":
             return 6
         if a == "C" and b == "A":
             return 6
-        
+
         return 0
-    
+
     def get_result(self, a, b):
         to_win = {
             "A": "B",
@@ -2576,18 +2579,16 @@ class Sol:
             return a
         if b == "Z":
             return to_win[a]
-    
+
     def calc_score(self, a, b):
         return self.get_winner(a, b) + self.get_score(b)
 
     def p1(self):
-        return sum(
-            [self.calc_score(x[0], x[1]) for x in self.cleaned]
-        )
+        return sum([self.calc_score(x[0], x[1]) for x in self.cleaned])
 
     def p2(self):
         res = []
-    
+
         for x in self.cleaned:
             a = x[0]
             b = self.get_result(a, x[1])

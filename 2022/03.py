@@ -307,6 +307,7 @@ CHwrdCpvCrwrWdpZqcpFttJSFJTLLHLJfbnbfD
 qrlZCwlqZrqqpWdlRqCRqdqcVNsVMzQzmNgNPBsRhVQVVzMs"""
 import string
 
+
 class Sol:
     def __init__(self, input_: str):
         self.input = input_
@@ -315,16 +316,16 @@ class Sol:
         print(self.solution)
 
     def get_dublicate(self, string):
-        s_1 = string[0: len(string) // 2]
+        s_1 = string[0 : len(string) // 2]
         s_2 = string[len(string) // 2 :]
         for c in s_1:
             if c in s_2:
                 return c
-            
+
     def get_priority(self, c):
         lower_upper = string.ascii_lowercase + string.ascii_uppercase
         return lower_upper.index(c) + 1
-    
+
     def get_group_of_three(self):
         yield from zip(*[iter(self.cleaned)] * 3)
 
@@ -338,16 +339,17 @@ class Sol:
         return [x for x in self.input.split("\n") if x]
 
     def p1(self):
-        return sum([
-            self.get_priority(self.get_dublicate(string))
-            for string in self.cleaned
-        ])
+        return sum(
+            [self.get_priority(self.get_dublicate(string)) for string in self.cleaned]
+        )
 
     def p2(self):
-        return sum([
-            self.get_priority(self.get_char_in_group(group))
-            for group in self.get_group_of_three()
-        ])
+        return sum(
+            [
+                self.get_priority(self.get_char_in_group(group))
+                for group in self.get_group_of_three()
+            ]
+        )
 
     @property
     def solution(self):

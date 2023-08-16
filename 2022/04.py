@@ -1025,13 +1025,16 @@ class Sol:
             s_1_start, s_1_end = map(int, s_1.split("-"))
             s_2_start, s_2_end = map(int, s_2.split("-"))
 
-            if (s_1_start <= s_2_start <= s_1_end) and (s_1_start <= s_2_end <= s_1_end):
+            if (s_1_start <= s_2_start <= s_1_end) and (
+                s_1_start <= s_2_end <= s_1_end
+            ):
                 res += 1
-            elif (s_2_start <= s_1_start <= s_2_end) and (s_2_start <= s_1_end <= s_2_end):
+            elif (s_2_start <= s_1_start <= s_2_end) and (
+                s_2_start <= s_1_end <= s_2_end
+            ):
                 res += 1
-            
-        return res
 
+        return res
 
     def p2(self):
         res = 0
@@ -1040,11 +1043,11 @@ class Sol:
             s_1_start, s_1_end = map(int, s_1.split("-"))
             s_2_start, s_2_end = map(int, s_2.split("-"))
 
-            if (s_1_start <= s_2_start <= s_1_end):
+            if s_1_start <= s_2_start <= s_1_end:
                 res += 1
-            elif (s_2_start <= s_1_start <= s_2_end):
+            elif s_2_start <= s_1_start <= s_2_end:
                 res += 1
-            
+
         return res
 
     @property
