@@ -32,7 +32,8 @@ class Dir:
     def __repr__(self):
         if self.parent:
             return str(f"{self.parent}/{self.name}")
-        return str("dir:/") 
+        return str("dir:/")
+
 
 class File:
     def __init__(self, name: str, dir: Dir, size: int):

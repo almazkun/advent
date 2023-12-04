@@ -4,14 +4,14 @@ def is_digit(i, char, line):
     if is_digit:
         n = int(char)
     else:
-        d = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
-        rev_d = ['eno', 'owt', 'eerht', 'ruof', 'evif', 'xis', 'neves', 'thgie', 'enin']
+        d = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+        rev_d = ["eno", "owt", "eerht", "ruof", "evif", "xis", "neves", "thgie", "enin"]
         if any([line[i:-1].startswith(x) for x in d]):
             for x in d:
                 if line[i:-1].startswith(x):
                     n = d.index(x) + 1
         elif any([line[i:-1].startswith(x) for x in rev_d]):
-            for x in rev_d: 
+            for x in rev_d:
                 if line[i:-1].startswith(x):
                     n = rev_d.index(x) + 1
     return n
@@ -38,15 +38,16 @@ def one(input):
         sm += int(f"{first_digit}{last_digit}")
     return sm
 
+
 if __name__ == "__main__":
-    inpt='''two1nine
+    inpt = """two1nine
 eightwothree
 abcone2threexyz
 xtwone3four
 4nineeightseven2
 zoneight234
-7pqrstsixteen'''
-    inpt='''9sixsevenz3
+7pqrstsixteen"""
+    inpt = """9sixsevenz3
 seven1cvdvnhpgthfhfljmnq
 6tvxlgrsevenjvbxbfqrsk4seven
 9zml
@@ -1045,5 +1046,5 @@ fivegctmd3vlcgfgnine
 64eight6eight6gxdpmtnbfone
 28xcbtt1
 1six5
-four289'''
+four289"""
     print(one(inpt))
