@@ -3,8 +3,8 @@ def get_char_by(line_idx, idx, list_strs):
     char = "."
     if (
         line_idx >= 0
-        and line_idx < len(list_strs)
         and idx >= 0
+        and line_idx < len(list_strs)
         and idx < len(list_strs[line_idx])
     ):
         char = list_strs[line_idx][idx]
@@ -102,8 +102,48 @@ def one(inpt):
     return sum(number_list)
 
 
+def get_ids_of_stars(list_strs):
+    for i, line in enumerate(list_strs):
+        for j, char in enumerate(line):
+            if char == "*":
+                yield (i, j)
+
+
+def get_number_ids(line_idx, idx, list_strs):
+    line_ids = {}
+    candidate_ids = list(digit_around_ids(line_idx, idx, list_strs))
+    for candidate_id in candidate_ids:
+        if candidate_id[0] not in line_ids:
+            line_ids[candidate_id[0]] = []
+        number_id = construct_whole_number(candidate_id[0], candidate_id[1], list_strs)
+        if number_id not in line_ids[candidate_id[0]]:
+            line_ids[candidate_id[0]].append(number_id)
+    return line_ids
+
+
 def two(inpt):
-    return 0
+    list_strs = [line for line in inpt.split("\n") if line]
+    star_ids = list(get_ids_of_stars(list_strs))
+    star_id_number_ids = {}
+    for star_id in star_ids:
+        star_id_number_ids[star_id] = get_number_ids(star_id[0], star_id[1], list_strs)
+
+    start_id_numbers = {}
+    for stat_id, number_ids in star_id_number_ids.items():
+        for line_id, number_id_list in number_ids.items():
+            if stat_id not in start_id_numbers:
+                start_id_numbers[stat_id] = []
+            for number_id in number_id_list:
+                start_id_numbers[stat_id].append(
+                    get_number_from_id_list(line_id, number_id, list_strs)
+                )
+
+    s = 0
+    for star_id, numbers in start_id_numbers.items():
+        if len(numbers) == 2:
+            s += numbers[0] * numbers[1]
+
+    return s
 
 
 if __name__ == "__main__":
