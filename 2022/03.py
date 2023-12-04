@@ -364,6 +364,6 @@ class Sol:
 if __name__ == "__main__":
     try:
         Sol(test_).solve()
-    except Exception as e:
+    except Exception:
         pass
     Sol(input_).solve()
