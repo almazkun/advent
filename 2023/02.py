@@ -45,6 +45,16 @@ def is_possible(line):
     return True
 
 
+def power(line):
+    draws = get_game_draws(line)
+    color_power = {"red": 0, "green": 0, "blue": 0}
+    for draw in draws:
+        draw_sum = get_draw_sum(draw)
+        for color, count in draw_sum.items():
+            color_power[color] = max(color_power[color], count)
+    return color_power
+
+
 def one(inpt):
     lines = inpt.split("\n")
     sum_id = 0
@@ -55,8 +65,12 @@ def one(inpt):
 
 
 def two(inpt):
-    pass
-    # return inpt
+    lines = inpt.split("\n")
+    mult_powers = 0
+    for line in lines:
+        power_dict = power(line)
+        mult_powers += power_dict["red"] * power_dict["green"] * power_dict["blue"]
+    return mult_powers
 
 
 if __name__ == "__main__":
@@ -168,3 +182,4 @@ Game 100: 2 blue, 1 red; 4 blue, 2 red, 1 green; 7 red, 5 blue; 2 red, 1 green, 
     print(one(inpt))
     print(one(one_inpt))
     print(two(inpt))
+    print(two(one_inpt))
