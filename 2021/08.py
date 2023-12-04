@@ -1,6 +1,5 @@
 from solution import Solution
 
-
 sig = {
     "cf": 1,
     "bcdf": 4,

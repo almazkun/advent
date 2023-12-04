@@ -53,7 +53,7 @@ class Board:
         {self.rows[1]}
         {self.rows[2]}
         {self.rows[3]}
-        {self.rows[4]}\n\n            
+        {self.rows[4]}\n\n
         """
 
 

@@ -1,15 +1,15 @@
 def main():
     stacks = [[] for _ in range(9)]
     """
-    [N] [G]                     [Q]    
-    [H] [B]         [B] [R]     [H]    
-    [S] [N]     [Q] [M] [T]     [Z]    
+    [N] [G]                     [Q]
+    [H] [B]         [B] [R]     [H]
+    [S] [N]     [Q] [M] [T]     [Z]
     [J] [T]     [R] [V] [H]     [R] [S]
     [F] [Q]     [W] [T] [V] [J] [V] [M]
     [W] [P] [V] [S] [F] [B] [Q] [J] [H]
     [T] [R] [Q] [B] [D] [D] [B] [N] [N]
     [D] [H] [L] [N] [N] [M] [D] [D] [B]
-     1   2   3   4   5   6   7   8   9 
+     1   2   3   4   5   6   7   8   9
     """
     stacks[0] = ["D", "T", "W", "F", "J", "S", "H", "N"]
     stacks[1] = ["H", "R", "P", "Q", "T", "N", "B", "G"]
