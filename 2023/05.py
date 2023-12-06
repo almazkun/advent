@@ -1,129 +1,74 @@
-def get_seed_list(list_strs):
-    for group in list_strs:
-        for line in group.split("\n"):
-            if line.startswith("seeds:"):
-                return [int(c) for c in line.split(":")[1].split()]
+class Map:
+    def __init__(self, map_str):
+        maps = map_str.split(":")[1]
+        maps = [tuple(int(c) for c in map.split()) for map in maps.split("\n") if map]
+        self.maps = maps
 
+    def get_dest(self, source):
+        for dest_start, source_start, range_ in self.maps:
+            if source_start <= source < source_start + range_:
+                return source + dest_start - source_start
+        return source
 
-def get_soil_map(list_strs):
-    for group in list_strs:
-        if group.startswith("seed-to-soil map:"):
-            return (
-               line for line in group.split(":")[1].split("\n") if line
-            )
-    
-def get_fertilizer_map(list_strs):
-    for group in list_strs:
-        if group.startswith("soil-to-fertilizer map:"):
-            return [
-                line for line in group.split(":")[1].split("\n") if line
-            ]
-        
-def get_water_map(list_strs):
-    for group in list_strs:
-        if group.startswith("fertilizer-to-water map:"):
-            return [
-                line for line in group.split(":")[1].split("\n") if line
-            ]
+    def get_dest_range(self, start_end):
+        new_start_end = []
+        for dest_start, source_start, range_ in self.maps:
+            source_end = source_start + range_
+            _new_start_end = []
+            while start_end:
+                start, end = start_end.pop()
+                before = (start, min(source_start, end))
+                inter = (max(start, source_start), min(source_end, end))
+                after = (max(source_end, start), end)
+                if before[0] < before[1]:
+                    _new_start_end.append(before)
+                if inter[0] < inter[1]:
+                    new_start_end.append(
+                        (
+                            inter[0] + dest_start - source_start,
+                            inter[1] + dest_start - source_start,
+                        )
+                    )
+                if after[0] < after[1]:
+                    _new_start_end.append(after)
+            start_end = _new_start_end
 
-def get_light_map(list_strs):
-    for group in list_strs:
-        if group.startswith("water-to-light map:"):
-            return [
-                line for line in group.split(":")[1].split("\n") if line
-            ]
+        return new_start_end + start_end
 
-def get_temperature_map(list_strs):
-    for group in list_strs:
-        if group.startswith("light-to-temperature map:"):
-            return [
-                line for line in group.split(":")[1].split("\n") if line
-            ]
-        
-def get_humidity_map(list_strs):
-    for group in list_strs:
-        if group.startswith("temperature-to-humidity map:"):
-            return [
-                line for line in group.split(":")[1].split("\n") if line
-            ]
-        
-def get_location_map(list_strs):
-    for group in list_strs:
-        if group.startswith("humidity-to-location map:"):
-            return [
-                line for line in group.split(":")[1].split("\n") if line
-            ]
-
-def get_dest(source, map):
-    dest_start, source_start, range_ = [int(c) for c in map.split()]
-    if source_start <= source < source_start + range_:
-        return source - source_start + dest_start
-
-
-def mapper(source, map_list):
-    for map in map_list:
-        dest = get_dest(source, map)
-        if dest:
-            return dest
-    return source
 
 def one(inpt):
-    list_strs = [line for line in inpt.split("\n\n") if line]
-    seed_list = get_seed_list(list_strs)
-    soil_map = get_soil_map(list_strs)
-    fertilizer_map = get_fertilizer_map(list_strs)
-    water_map = get_water_map(list_strs)
-    light_map = get_light_map(list_strs)
-    temperature_map = get_temperature_map(list_strs)
-    humidity_map = get_humidity_map(list_strs)
-    location_map = get_location_map(list_strs)
+    seed_list, *maps_list_raw = [line for line in inpt.split("\n\n") if line]
+    seed_list = [int(c) for c in seed_list.split(":")[1].split()]
+
+    maps_list = [Map(map_str) for map_str in maps_list_raw]
 
     min_location = float("inf")
-    for seed in seed_list:
-        soil = mapper(seed, soil_map)
-        fertilizer = mapper(soil, fertilizer_map)
-        water = mapper(fertilizer, water_map)
-        light = mapper(water, light_map)
-        temperature = mapper(light, temperature_map)
-        humidity = mapper(temperature, humidity_map)
-        location = mapper(humidity, location_map)
-        min_location = min(min_location, location)
-
+    for source in seed_list:
+        for map in maps_list:
+            source = map.get_dest(source)
+        min_location = min(min_location, source)
     return min_location
 
+
 def get_seed_list_two(list_strs):
-    for group in list_strs:
-        for line in group.split("\n"):
-            if line.startswith("seeds:"):
-                lst = [int(c) for c in line.split(":")[1].split()]
-                while lst:
-                    start_index, range_ = lst.pop(0), lst.pop(0)
-                    yield from range(start_index, start_index + range_ )
+    lst = [int(c) for c in list_strs.split(":")[1].split()]
+    while lst:
+        yield lst.pop(0), lst.pop(0)
 
 
 def two(inpt):
-    list_strs = [line for line in inpt.split("\n\n") if line]
-    seed_list = get_seed_list_two(list_strs)
-    soil_map = get_soil_map(list_strs)
-    fertilizer_map = get_fertilizer_map(list_strs)
-    water_map = get_water_map(list_strs)
-    light_map = get_light_map(list_strs)
-    temperature_map = get_temperature_map(list_strs)
-    humidity_map = get_humidity_map(list_strs)
-    location_map = get_location_map(list_strs)
+    seed_list, *maps_list_raw = [line for line in inpt.split("\n\n") if line]
+    seed_list = get_seed_list_two(seed_list)
+
+    maps_list = [Map(map_str) for map_str in maps_list_raw]
 
     min_location = float("inf")
-    print("seed  soil  fertilizer  water  light  temperature  humidity  location")
-    for seed in seed_list:
-        soil = mapper(seed, soil_map)
-        fertilizer = mapper(soil, fertilizer_map)
-        water = mapper(fertilizer, water_map)
-        light = mapper(water, light_map)
-        temperature = mapper(light, temperature_map)
-        humidity = mapper(temperature, humidity_map)
-        location = mapper(humidity, location_map)
-        min_location = min(min_location, location)
-        print(f"{seed}  {soil}  {fertilizer}  {water}  {light}  {temperature}  {humidity}  {location}")
+
+    for start, range_ in seed_list:
+        start_end = [(start, start + range_)]
+        for map in maps_list:
+            start_end = map.get_dest_range(start_end)
+        min_location = min(min_location, min(start_end)[0])
     return min_location
 
 
@@ -414,4 +359,4 @@ humidity-to-location map:
     print(one(test))
     print(one(inpt))
     print(two(test))
-#    print(two(inpt))
+    print(two(inpt))
