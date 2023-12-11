@@ -65,5 +65,5 @@ if __name__ == "__main__":
     # print(one(test))
     # print(one(inpt))
     print(two(custom))
-    #print(two(test))
+    # print(two(test))
     print(two(inpt))
