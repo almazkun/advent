@@ -1,13 +1,16 @@
-
 def predict_next(seq):
-    if all([s==0 for s in seq]):
+    if all([s == 0 for s in seq]):
         return 0
-    return seq[-1] + 1 * predict_next([seq[i + 1] - seq[i] for i in range(len(seq) - 1)])
+    return seq[-1] + 1 * predict_next(
+        [seq[i + 1] - seq[i] for i in range(len(seq) - 1)]
+    )
+
 
 def predict_prev(seq):
-    if all([s==0 for s in seq]):
+    if all([s == 0 for s in seq]):
         return 0
     return seq[0] - 1 * predict_prev([seq[i + 1] - seq[i] for i in range(len(seq) - 1)])
+
 
 def one(inpt):
     str_list = [line for line in inpt.split("\n") if line]
